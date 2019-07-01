@@ -9,7 +9,7 @@ class BaselineCNN(nn.module):
         layers = []
         layers.append(nn.Conv2d(in_channels=1, out_channels=1, kernel_size=kernel_size, padding=padding, bias=False))
         layers.append(nn.BatchNorm2d(1))
-        layers.append(nn.RelU(inplace=True)
+        layers.append(nn.RelU(inplace=True))
         self.baseline_cnn = nn.Sequential(*layers)
 
     def forward(self, x):
