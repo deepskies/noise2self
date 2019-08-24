@@ -385,3 +385,32 @@ def get_args():
                         type=str,
                         required=True)
     args = parser.parse_args()
+
+
+# Function that takes in stacked 2 channel data and returns images
+# whose difference in max values is below a threshold
+def clean_two_channel_data(data, thresh=5000):
+  max_differences = np.abs((data[:,0].max(-1).max(-1)) - (data[:,1].max(-1).max(-1)))
+  idxs = max_differences < thresh
+  return data[idxs]
+
+
+# Function that takes in stacked 3 channel data and returns images
+# whose difference in max values is below a threshold
+def clean_three_channel_data(data, thresh=5000):
+  max_differences_1_2 = np.abs((data[:,0].max(-1).max(-1)) - (data[:,1].max(-1).max(-1)))
+  max_differences_1_3 = np.abs((data[:,0].max(-1).max(-1)) - (data[:,2].max(-1).max(-1)))
+  max_differences_2_3 = np.abs((data[:,1].max(-1).max(-1)) - (data[:,2].max(-1).max(-1)))
+
+  idxs_1_2 = (max_differences_1_2 < thresh).reshape(-1)
+  idxs_1_3 = (max_differences_1_3 < thresh).reshape(-1)
+  idxs_2_3 = (max_differences_2_3 < thresh).reshape(-1)
+  
+  all_idxs = np.stack([idxs_1_2, idxs_1_3, idxs_2_3])
+  idxs = (np.sum(all_idxs, axis=0) == 3)
+    
+  return data[idxs]
+
+
+def clamp_data(data, min=0, max=1500):
+  return np.clip(data[:], 0, max).reshape(len(data), -1, 128, 128)
