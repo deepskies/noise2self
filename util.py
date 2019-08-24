@@ -36,7 +36,8 @@ def tensor_to_numpy(x):
         raise
 
 
-def plot_tensors(tensor_list, titles=None):
+def plot_tensors(tensor_list, titles=None, **kwargs):
+
     color = True if tensor_list[0].shape[1] == 3 else False
     image_list = [tensor_to_numpy(tensor) for tensor in tensor_list]
     width = len(image_list)
@@ -44,9 +45,11 @@ def plot_tensors(tensor_list, titles=None):
 
     for i in range(width):
         if image_list[i].ndim == 2:
-            ax[i].imshow(image_list[i], cmap='Greys_r')
+            if 'cmap' not in kwargs:
+                kwargs['cmap'] = 'Greys_r'
+            ax[i].imshow(image_list[i], **kwargs)
         else:
-            ax[i].imshow(image_list[i])
+            ax[i].imshow(image_list[i], **kwargs)
         if titles:
             ax[i].set_title(titles[i])
         ax[i].get_xaxis().set_ticks([])
